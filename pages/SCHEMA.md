@@ -1,12 +1,12 @@
 # Page schema (copy this)
 
-Use this shape for later “who takes X” pages. Page one (`paint.html`) is the example. Do not invent hours, fees, caps, addresses, or phone numbers. If an official URL disagrees with the draft page, prefer the official page and update the last-checked date.
+Use this shape for later “who takes X” pages. Page one (`paint.html`) is the example. Do not invent hours, fees, caps, addresses, or phone numbers. If an official URL disagrees with the page, prefer the official page and update the last-checked date.
 
 ## File
 
 - One HTML file per topic (repo root, next to `index.html`).
 - Shared `style.css`. Shared nav: Home, Paint, Coming.
-- `<meta name="robots" content="noindex,nofollow">` on every HTML page while this is a private draft.
+- Do not add `noindex`. The site is live on GitHub Pages.
 - The page must still be readable if someone opens the HTML file alone (facts live in the page, not in a CMS).
 
 ## Sections (in order)
@@ -27,5 +27,5 @@ Write the date the official URLs were actually read, like `29 Aug 2026`. Same da
 ## Do not
 
 - Write pages 2–7 until each one is researched.
-- Enable GitHub Pages, Vercel, a custom domain, analytics, ads, affiliate links, or a sitemap meant for Google.
+- Buy a custom domain, add analytics/ads/affiliate links, or sign host terms without Rene asking.
 - Scrape PaintCare.
