@@ -1,0 +1,11 @@
+:root { font-family: Georgia, "Times New Roman", serif; color: #1a1a1a; background: #f7f4ee; }
+body { max-width: 42rem; margin: 0 auto; padding: 1.25rem; line-height: 1.45; }
+header p, .note, footer { font-family: system-ui, sans-serif; font-size: 0.9rem; color: #444; }
+h1 { font-size: 1.6rem; line-height: 1.25; }
+ol { padding-left: 1.2rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; vertical-align: top; }
+th { background: #efe8dc; }
+.warn { background: #fff3cd; padding: 0.75rem 1rem; border: 1px solid #e0c36a; }
+a { color: #0b4f2a; }
+footer { margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1rem; }
