@@ -1,18 +1,18 @@
 # Page schema (copy this)
 
-Use this shape for later “who takes X” pages. Page one (`paint.html`) is the example. Do not invent hours, fees, caps, addresses, or phone numbers. If an official URL disagrees with the page, prefer the official page and update the last-checked date.
+Use this shape for later “who takes X” pages. Page one (`paint.html`) is the example. Do not invent hours, fees, caps, addresses, or phone numbers. If an official URL disagrees with the draft page, prefer the official page and update the last-checked date.
 
 ## File
 
 - One HTML file per topic (repo root, next to `index.html`).
-- Shared `style.css`. Shared nav: Home, Paint, Coming.
-- Do not add `noindex`. The site is live on GitHub Pages.
+- Shared `style.css`. Shared nav: Home, Paint, Hours, Coming.
+- `<meta name="robots" content="noindex,nofollow">` on every HTML page while this is a private draft.
 - The page must still be readable if someone opens the HTML file alone (facts live in the page, not in a CMS).
 
 ## Sections (in order)
 
 1. **Header** — unofficial line, **H1** (the question, e.g. “Where to take leftover paint…”), one-line scope + last-checked date.
-2. **Nav** — Home · Paint · Coming (`aria-current="page"` on the current item).
+2. **Nav** — Home · Paint · Hours · Coming (`aria-current="page"` on the current item).
 3. **Disclaimer** — `.warn`: confirm on the official page the morning you go. Not the county. Not a hauler.
 4. **Decision tree** — numbered list: which kind / which case, then where that case goes.
 5. **Site table** — where to go. Columns: Site | What to know. Put last-checked facts here (hours, ID, caps, Sunday entrance, phones). Link official sources in the cell.
@@ -26,6 +26,6 @@ Write the date the official URLs were actually read, like `29 Aug 2026`. Same da
 
 ## Do not
 
-- Write pages 2–7 until each one is researched.
-- Buy a custom domain, add analytics/ads/affiliate links, or sign host terms without Rene asking.
+- Write pages 3–7 until each one is researched.
+- Enable GitHub Pages, Vercel, a custom domain, analytics, ads, affiliate links, or a sitemap meant for Google.
 - Scrape PaintCare.
