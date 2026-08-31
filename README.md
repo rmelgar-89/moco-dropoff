@@ -10,6 +10,7 @@ Confirm hours on the official page the morning you go. No ads, affiliate links, 
 
 - [Home](index.html) — directory hub
 - [Where to take leftover paint](paint.html) (last checked 29 Aug 2026)
+- [Transfer-station hours and entrances](hours.html) (last checked 29 Aug 2026)
 - [Coming](coming.html) — later pages, not written yet
 
 ## Last-checked convention
@@ -25,4 +26,4 @@ Copy the section order from [pages/SCHEMA.md](pages/SCHEMA.md) when you add a la
 
 ## Later (not written)
 
-Transfer-station hours · mattresses · TVs / e-waste · Freon · tires / propane · HHW how-to
+Mattresses · TVs / e-waste · Freon · tires / propane · HHW how-to
