@@ -1,27 +1,758 @@
-:root { font-family: Georgia, "Times New Roman", serif; color: #1a1a1a; background: #f7f4ee; }
-body { max-width: 42rem; margin: 0 auto; padding: 1.25rem; line-height: 1.45; }
-header p, .note, footer, nav { font-family: system-ui, sans-serif; font-size: 0.9rem; color: #444; }
-h1 { font-size: 1.6rem; line-height: 1.25; }
-h2 { font-size: 1.2rem; }
-ol { padding-left: 1.2rem; }
-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; background: #fff; }
-th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; vertical-align: top; }
-th { background: #efe8dc; }
-.warn { background: #fff3cd; padding: 0.75rem 1rem; border: 1px solid #e0c36a; }
-a { color: #0b4f2a; }
-footer { margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+/* =============================================================================
+   MoCo Drop-Off — visual draft (not live)
+   Paper flyer for a phone in a Montgomery County garage. Not a .gov skin.
 
-nav {
+   TOKENS
+   ------
+   Color
+     --paper         #f4efe6   warm off-white ground
+     --paper-lift    #faf7f1   cards (one step lighter, still paper)
+     --paper-shade   #e8e1d4   pending fill / strip-adjacent
+     --ink           #1c1917   charcoal body
+     --ink-muted     #3a3530   labels, nav idle, footer (garage contrast, ≥4.5:1 on paper)
+     --accent        #c45c26   unofficial stripe: oxidized paint / safety
+                               NOT county blue, NOT MD-flag red/yellow/black
+                               Use for bars, numbers, current-nav, card ticks.
+                               Do not use as small body text on paper (contrast).
+     --accent-ink    #8a3414   rust dark enough for text (≥7:1 on paper)
+     --warn-bg       #f6e3a8   confirm-hours amber
+     --warn-ink      #1c1917   ink on amber (do not lighten)
+     --link          #0f4f4a   dark ink-teal — not .gov green, not county blue
+     --link-hover    #0a3532
+     --line          #ddd6c8   hairline
+     --line-strong   #c4b8a4   pending dash / chip edge
+     --strip-bg      #241e1a   warm near-black (not navy)
+     --strip-ink     #f4efe6   cream on strip
+
+   Type
+     --font-ui       system-ui, ui-sans-serif, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif
+                     (chrome, labels, body, tables — no network fonts)
+     --font-display  Georgia, "Iowan Old Style", "New York",
+                     "Palatino Linotype", Palatino, "Times New Roman", serif
+                     (H1 only — the question)
+     --size-h1       clamp(1.5rem, 4.8vw, 1.85rem)
+     --size-body     1rem
+     --size-small    0.875rem
+     --size-h2       1.4rem    section titles (Which kind / Where to go)
+     --size-label    0.72rem   uppercase field labels
+     --size-strip    0.72rem
+
+   Space
+     --measure       40rem     max content width
+     --gap           0.65rem   stack rhythm between cards
+     --gap-kind      1.25rem   air between kind cards
+     --pad           1rem
+     --tap           2.75rem   min tap (~44px) on nav + call/map
+     --radius        0         paper, not chrome — square cuts
+   ============================================================================= */
+
+:root {
+  --paper: #f4efe6;
+  --paper-lift: #faf7f1;
+  --paper-shade: #e8e1d4;
+  --ink: #1c1917;
+  --ink-muted: #3a3530;
+  --accent: #c45c26;
+  --accent-ink: #8a3414;
+  --warn-bg: #f6e3a8;
+  --warn-ink: #1c1917;
+  --link: #0f4f4a;
+  --link-hover: #0a3532;
+  --line: #ddd6c8;
+  --line-strong: #c4b8a4;
+  --strip-bg: #241e1a;
+  --strip-ink: #f4efe6;
+  --font-ui: system-ui, ui-sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Georgia, "Iowan Old Style", "New York", "Palatino Linotype", Palatino, "Times New Roman", serif;
+  --size-h1: clamp(1.5rem, 4.8vw, 1.85rem);
+  --size-h2: 1.4rem;
+  --size-body: 1rem;
+  --size-small: 0.875rem;
+  --size-label: 0.72rem;
+  --size-strip: 0.72rem;
+  --measure: 40rem;
+  --gap: 0.65rem;
+  --gap-kind: 1.25rem;
+  --pad: 1rem;
+  --tap: 2.75rem;
+  --radius: 0;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--size-body);
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+
+.skip {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.5rem 0.75rem;
+  z-index: 20;
+}
+
+.skip:focus {
+  top: 0.5rem;
+}
+
+/* --- Unofficial identity strip (every page) -------------------------------- */
+
+.strip {
+  margin: 0;
+  padding: 0.55rem 1rem 0.6rem;
+  background: var(--strip-bg);
+  color: var(--strip-ink);
+  font-family: var(--font-ui);
+  font-size: var(--size-strip);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  text-align: center;
+  border-top: 5px solid var(--accent);
+}
+
+/* --- Page measure ---------------------------------------------------------- */
+
+.page {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+@media (min-width: 40rem) {
+  .page {
+    padding: 1.25rem 1.25rem 3.5rem;
+  }
+}
+
+/* --- Header: wordmark + the question -------------------------------------- */
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.85rem;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.wordmark a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wordmark a:hover {
+  color: var(--accent-ink);
+}
+
+.wordmark-mark {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+}
+
+header h1 {
+  font-family: var(--font-display);
+  font-size: var(--size-h1);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.55rem;
+}
+
+.lede {
+  margin: 0 0 1rem;
+  font-size: var(--size-small);
+  color: var(--ink-muted);
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  margin: 0 0 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #ddd;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
 }
-nav a[aria-current="page"] { font-weight: 700; text-decoration: none; color: #1a1a1a; }
 
-.dir { list-style: none; padding-left: 0; }
-.dir li { margin: 0.65rem 0; padding: 0.65rem 0.75rem; background: #fff; border: 1px solid #ddd; }
-.dir .pending { color: #555; }
-.unofficial { font-family: system-ui, sans-serif; font-size: 0.85rem; }
+.chip {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--ink);
+  background: var(--paper-lift);
+  border: 1px solid var(--line-strong);
+  padding: 0.15rem 0.55rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* --- Nav: three equal tap targets ----------------------------------------- */
+
+nav[aria-label="Site"] {
+  display: flex;
+  gap: 0;
+  margin: 0 0 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+nav[aria-label="Site"] a {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0.85rem 0.4rem;
+  font-weight: 650;
+  font-size: 1rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+
+nav[aria-label="Site"] a:hover {
+  color: var(--ink);
+  background: var(--paper-lift);
+}
+
+nav[aria-label="Site"] a[aria-current="page"] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* --- Confirm-on-the-official-page: stay loud ------------------------------ */
+
+.warn {
+  margin: 0 0 1.5rem;
+  padding: 0.8rem 1rem 0.8rem 0.95rem;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  border: 1px solid var(--accent);
+  border-left: 5px solid var(--accent);
+  font-size: 0.95rem;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+.warn strong {
+  font-weight: 700;
+}
+
+/* --- Section titles: readable as titles, not tiny grey labels -------------- */
+
+h2 {
+  font-family: var(--font-ui);
+  font-size: var(--size-h2);
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 2rem 0 0.9rem;
+  line-height: 1.25;
+}
+
+h3 {
+  font-family: var(--font-ui);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.65rem;
+  line-height: 1.3;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+ul {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+}
+
+li + li {
+  margin-top: 0.4rem;
+}
+
+/* --- Decision tree: 5 stacked choice cards -------------------------------- */
+
+.choices {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-kind);
+}
+
+.choices > li {
+  display: grid;
+  grid-template-columns: 2.1rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  background: var(--paper-lift);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  padding: 0.8rem 0.9rem 0.85rem 0.75rem;
+  margin-top: 0;
+}
+
+.choice-num {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 750;
+  font-style: normal;
+  color: var(--paper);
+  background: var(--accent);
+  width: 1.7rem;
+  height: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.choice-kind {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.choice-dest {
+  margin: 0 0 0.35rem;
+}
+
+.choice-dest .chip {
+  font-weight: 650;
+  background: var(--paper);
+}
+
+.choice-action {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+/* --- Site cards: table (wide) + dl (phone) -------------------------------- */
+
+.site-card {
+  background: var(--paper-lift);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--accent);
+  padding: 1rem 1rem 0.35rem;
+  margin: 0 0 1.15rem;
+}
+
+.site-card h3 {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Hours: loudest field on the site card. Same strings as live. No "open now". */
+.site-hours {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 0.85rem 0.8rem;
+  background: var(--paper-shade);
+  border-left: 4px solid var(--accent);
+}
+
+.site-hours-label {
+  margin: 0 0 0.3rem;
+  font-size: var(--size-label);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.site-hours-when {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+@media (min-width: 40rem) {
+  .site-hours-when {
+    font-size: 1.28rem;
+  }
+}
+
+.site-hours-when + .site-hours-when {
+  margin-top: 0.15rem;
+}
+
+.site-hours-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.site-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0 0 0.35rem;
+}
+
+.site-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  min-height: var(--tap);
+  padding: 0.5rem 0.55rem;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  color: var(--accent-ink);
+  background: var(--paper);
+  border: 2px solid var(--accent);
+}
+
+.site-action-detail {
+  font-size: 0.85rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.site-action:hover {
+  color: var(--ink);
+  background: var(--warn-bg);
+}
+
+.site-action--fill {
+  color: var(--paper);
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+}
+
+.site-action--fill:hover {
+  color: var(--strip-ink);
+  background: var(--strip-bg);
+  border-color: var(--strip-bg);
+}
+
+.site-action:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+
+.site-actions-alt {
+  margin: 0 0 0.9rem;
+  font-size: var(--size-small);
+  color: var(--ink-muted);
+}
+
+.site-actions-alt a {
+  color: var(--ink-muted);
+}
+
+.site-actions-alt a:hover {
+  color: var(--link);
+}
+
+
+.site-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.site-table th {
+  text-align: left;
+  vertical-align: top;
+  width: 7.25rem;
+  padding: 0.55rem 0.85rem 0.55rem 0;
+  font-size: var(--size-label);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-table td {
+  vertical-align: top;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.site-table tr:last-child th,
+.site-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.site-dl {
+  margin: 0;
+}
+
+.site-dl > div {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.site-dl > div:last-child {
+  border-bottom: 0;
+}
+
+.site-dl dt {
+  font-size: var(--size-label);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0 0 0.15rem;
+}
+
+.site-dl dd {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.sources-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.35rem;
+}
+
+.sources-inline a + a::before {
+  content: "·";
+  margin-right: 0.35rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+/* Phone: definition-list cards. Wider: real 2-col table. */
+@media (max-width: 36rem) {
+  .site-table {
+    display: none;
+  }
+}
+
+@media (min-width: 36.01rem) {
+  .site-dl {
+    display: none;
+  }
+}
+
+/* --- Bring this / how-to / sources ---------------------------------------- */
+
+.facts-list {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.facts-list li {
+  margin: 0;
+  background: var(--paper-lift);
+  border: 1px solid var(--line);
+  padding: 0.7rem 0.9rem;
+}
+
+.how-to {
+  background: var(--paper-lift);
+  border: 1px solid var(--line);
+  padding: 0.85rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.how-to p {
+  margin: 0;
+}
+
+.sources {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.sources li + li {
+  margin-top: 0.45rem;
+}
+
+/* --- Home / coming directory cards ---------------------------------------- */
+
+.dir {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: grid;
+  gap: var(--gap);
+}
+
+.dir li {
+  margin: 0;
+}
+
+.dir-card {
+  display: block;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper-lift);
+  color: inherit;
+  text-decoration: none;
+}
+
+.dir-card:hover {
+  color: inherit;
+}
+
+.dir-card:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+}
+
+.dir-card--live {
+  border-left: 4px solid var(--accent);
+  border-top: 4px solid var(--accent);
+  padding: 1.2rem 1.1rem 1.25rem;
+}
+
+.dir-card--live:hover {
+  background: #fff;
+}
+
+.dir-kind {
+  margin: 0 0 0.25rem;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.dir-card--live .dir-kind {
+  font-size: 1.28rem;
+  margin: 0 0 0.35rem;
+}
+
+.dir-card .chip + .chip {
+  margin-left: 0.35rem;
+}
+
+.chip--accent {
+  color: var(--paper);
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  font-weight: 750;
+}
+
+.dir-blurb {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.dir-card--pending {
+  background: var(--paper-shade);
+  border-style: dashed;
+  border-left-width: 4px;
+  border-left-color: var(--line-strong);
+  color: var(--ink-muted);
+}
+
+.dir-status {
+  display: inline-block;
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  padding: 0.12rem 0.45rem;
+}
+
+.note {
+  font-size: var(--size-small);
+  color: var(--ink-muted);
+}
+
+/* --- Footer ---------------------------------------------------------------- */
+
+footer {
+  margin-top: 2.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: var(--size-small);
+  color: var(--ink-muted);
+}
+
+footer p {
+  margin: 0 0 0.5rem;
+}
+
+footer .chip {
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+
+/* --- Helpers -------------------------------------------------------------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
